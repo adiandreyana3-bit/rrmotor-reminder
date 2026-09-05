@@ -29,6 +29,9 @@ public class ReminderReceiver extends BroadcastReceiver {
         String motor =
                 intent.getStringExtra("motor");
 
+        String nopol =
+                intent.getStringExtra("nopol");
+
         long kmMaksimal =
                 intent.getLongExtra(
                         "kmMaksimal",
@@ -47,7 +50,6 @@ public class ReminderReceiver extends BroadcastReceiver {
                         1
                 );
 
-        // Intent untuk membuka WhatsApp langsung
         Intent waIntent =
                 new Intent(
                         context,
@@ -75,6 +77,11 @@ public class ReminderReceiver extends BroadcastReceiver {
         );
 
         waIntent.putExtra(
+                "nopol",
+                nopol
+        );
+
+        waIntent.putExtra(
                 "kmMaksimal",
                 kmMaksimal
         );
@@ -94,12 +101,15 @@ public class ReminderReceiver extends BroadcastReceiver {
                         | Intent.FLAG_ACTIVITY_CLEAR_TOP
         );
 
+        int requestCode =
+                documentId == null
+                        ? 0
+                        : documentId.hashCode();
+
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(
                         context,
-                        documentId == null
-                                ? 0
-                                : documentId.hashCode(),
+                        requestCode,
                         waIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                                 | PendingIntent.FLAG_IMMUTABLE
@@ -111,7 +121,6 @@ public class ReminderReceiver extends BroadcastReceiver {
                                 Context.NOTIFICATION_SERVICE
                         );
 
-        // Untuk Android 8 ke atas
         if (Build.VERSION.SDK_INT >=
                 Build.VERSION_CODES.O) {
 
@@ -146,26 +155,35 @@ public class ReminderReceiver extends BroadcastReceiver {
                         .setSmallIcon(
                                 android.R.drawable.ic_dialog_info
                         )
-                        .setContentTitle(judul)
-                        .setContentText(isi)
+                        .setContentTitle(
+                                judul
+                        )
+                        .setContentText(
+                                isi
+                        )
                         .setStyle(
-                                new NotificationCompat.BigTextStyle()
+                                new NotificationCompat
+                                        .BigTextStyle()
                                         .bigText(
                                                 "Reminder ganti oli sudah jatuh tempo.\n"
                                                         + "Tekan notifikasi untuk membuka WhatsApp."
                                         )
                         )
                         .setPriority(
-                                NotificationCompat.PRIORITY_HIGH
+                                NotificationCompat
+                                        .PRIORITY_HIGH
                         )
-                        .setAutoCancel(true)
+                        .setAutoCancel(
+                                true
+                        )
                         .setContentIntent(
                                 pendingIntent
                         );
 
         int notificationId =
                 documentId == null
-                        ? (int) System.currentTimeMillis()
+                        ? (int)
+                        System.currentTimeMillis()
                         : documentId.hashCode();
 
         manager.notify(
