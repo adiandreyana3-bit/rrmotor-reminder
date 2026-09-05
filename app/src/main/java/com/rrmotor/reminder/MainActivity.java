@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -58,12 +59,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // =========================
-    // LOGIN
-    // =========================
-
     private void tampilkanHalamanLogin() {
-
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -97,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         loginButton = new Button(this);
         loginButton.setText("LOGIN");
-
         loginButton.setOnClickListener(v -> login());
 
         layout.addView(title);
@@ -119,163 +114,90 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login() {
-
-        String email =
-                emailInput.getText().toString().trim();
-
-        String password =
-                passwordInput.getText().toString();
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString();
 
         if (email.isEmpty()) {
-
-            emailInput.setError(
-                    "Email wajib diisi"
-            );
-
+            emailInput.setError("Email wajib diisi");
             emailInput.requestFocus();
-
             return;
         }
 
         if (password.isEmpty()) {
-
-            passwordInput.setError(
-                    "Password wajib diisi"
-            );
-
+            passwordInput.setError("Password wajib diisi");
             passwordInput.requestFocus();
-
             return;
         }
 
         loginButton.setEnabled(false);
         loginButton.setText("LOGIN...");
 
-        mAuth.signInWithEmailAndPassword(
-                        email,
-                        password
-                )
-                .addOnCompleteListener(
-                        this,
-                        task -> {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    loginButton.setEnabled(true);
+                    loginButton.setText("LOGIN");
 
-                            loginButton.setEnabled(true);
-                            loginButton.setText("LOGIN");
+                    if (task.isSuccessful()) {
+                        Toast.makeText(
+                                this,
+                                "Login berhasil!",
+                                Toast.LENGTH_SHORT
+                        ).show();
 
-                            if (task.isSuccessful()) {
+                        tampilkanHalamanUtama();
 
-                                Toast.makeText(
-                                        this,
-                                        "Login berhasil!",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                    } else {
+                        String pesan = "Login gagal";
 
-                                tampilkanHalamanUtama();
-
-                            } else {
-
-                                String pesan =
-                                        "Login gagal";
-
-                                if (
-                                        task.getException()
-                                                != null
-                                ) {
-
-                                    pesan =
-                                            "Login gagal: "
-                                                    + task.getException()
-                                                    .getMessage();
-                                }
-
-                                Toast.makeText(
-                                        this,
-                                        pesan,
-                                        Toast.LENGTH_LONG
-                                ).show();
-                            }
+                        if (task.getException() != null) {
+                            pesan =
+                                    "Login gagal: "
+                                            + task.getException().getMessage();
                         }
-                );
+
+                        Toast.makeText(
+                                this,
+                                pesan,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                });
     }
 
-    // =========================
-    // HALAMAN UTAMA
-    // =========================
-
     private void tampilkanHalamanUtama() {
-
         sedangMenyimpan = false;
 
-        ScrollView scrollView =
-                new ScrollView(this);
+        ScrollView scrollView = new ScrollView(this);
 
-        LinearLayout layout =
-                new LinearLayout(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(30, 40, 30, 30);
 
-        layout.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
-        layout.setPadding(
-                30,
-                40,
-                30,
-                30
-        );
-
-        TextView title =
-                new TextView(this);
-
-        title.setText(
-                "🏍️ RR MOTOR REMINDER"
-        );
-
+        TextView title = new TextView(this);
+        title.setText("🏍️ RR MOTOR REMINDER");
         title.setTextSize(24);
         title.setGravity(Gravity.CENTER);
+        title.setPadding(0, 0, 0, 20);
 
-        title.setPadding(
-                0,
-                0,
-                0,
-                20
-        );
-
-        Button tambahButton =
-                new Button(this);
-
-        tambahButton.setText(
-                "➕ TAMBAH REMINDER"
-        );
-
+        Button tambahButton = new Button(this);
+        tambahButton.setText("➕ TAMBAH REMINDER");
         tambahButton.setOnClickListener(
                 v -> tampilkanFormTambah()
         );
 
-        Button lihatButton =
-                new Button(this);
-
-        lihatButton.setText(
-                "📋 ANTRIAN REMINDER"
-        );
-
+        Button lihatButton = new Button(this);
+        lihatButton.setText("📋 ANTRIAN REMINDER");
         lihatButton.setOnClickListener(
                 v -> tampilkanAntrian()
         );
 
-        Button logoutButton =
-                new Button(this);
+        Button logoutButton = new Button(this);
+        logoutButton.setText("LOGOUT");
 
-        logoutButton.setText(
-                "LOGOUT"
-        );
-
-        logoutButton.setOnClickListener(
-                v -> {
-
-                    mAuth.signOut();
-                    tampilkanHalamanLogin();
-                }
-        );
+        logoutButton.setOnClickListener(v -> {
+            mAuth.signOut();
+            tampilkanHalamanLogin();
+        });
 
         layout.addView(title);
         layout.addView(tambahButton);
@@ -287,76 +209,39 @@ public class MainActivity extends AppCompatActivity {
         setContentView(scrollView);
     }
 
-    // =========================
-    // FORM TAMBAH
-    // =========================
-
     private void tampilkanFormTambah() {
-
         sedangMenyimpan = false;
 
-        ScrollView scrollView =
-                new ScrollView(this);
+        ScrollView scrollView = new ScrollView(this);
 
-        LinearLayout layout =
-                new LinearLayout(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(30, 30, 30, 30);
 
-        layout.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
-        layout.setPadding(
-                30,
-                30,
-                30,
-                30
-        );
-
-        TextView title =
-                new TextView(this);
-
-        title.setText(
-                "➕ TAMBAH REMINDER"
-        );
-
+        TextView title = new TextView(this);
+        title.setText("➕ TAMBAH REMINDER");
         title.setTextSize(24);
         title.setGravity(Gravity.CENTER);
-
-        title.setPadding(
-                0,
-                0,
-                0,
-                25
-        );
+        title.setPadding(0, 0, 0, 25);
 
         EditText nama =
-                buatInput(
-                        "Nama konsumen (opsional)"
-                );
+                buatInput("Nama konsumen (opsional)");
 
         EditText wa =
-                buatInput(
-                        "Nomor WhatsApp"
-                );
+                buatInput("Nomor WhatsApp");
 
         wa.setInputType(
                 InputType.TYPE_CLASS_PHONE
         );
 
         EditText motor =
-                buatInput(
-                        "Jenis motor (opsional)"
-                );
+                buatInput("Jenis motor (opsional)");
 
         EditText nopol =
-                buatInput(
-                        "Nopol (opsional)"
-                );
+                buatInput("Nopol (opsional)");
 
         EditText km =
-                buatInput(
-                        "KM saat ganti oli (opsional)"
-                );
+                buatInput("KM saat ganti oli (opsional)");
 
         km.setInputType(
                 InputType.TYPE_CLASS_NUMBER
@@ -370,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
         );
 
         pilihBulanText.setTextSize(17);
-
         pilihBulanText.setPadding(
                 0,
                 20,
@@ -424,10 +308,6 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(simpanButton);
         layout.addView(kembaliButton);
 
-        // =========================
-        // ANTI DOBEL KLIK
-        // =========================
-
         simpanButton.setOnClickListener(v -> {
 
             if (sedangMenyimpan) {
@@ -450,13 +330,11 @@ public class MainActivity extends AppCompatActivity {
                     km.getText().toString().trim();
 
             if (waText.isEmpty()) {
-
                 wa.setError(
                         "Nomor WhatsApp wajib diisi"
                 );
 
                 wa.requestFocus();
-
                 return;
             }
 
@@ -472,9 +350,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
 
                     kmSekarang =
-                            Integer.parseInt(
-                                    kmText
-                            );
+                            Integer.parseInt(kmText);
 
                 } catch (Exception e) {
 
@@ -483,7 +359,6 @@ public class MainActivity extends AppCompatActivity {
                     );
 
                     km.requestFocus();
-
                     return;
                 }
             }
@@ -500,7 +375,6 @@ public class MainActivity extends AppCompatActivity {
                         kmSekarang + 2000;
             }
 
-            // KUNCI
             sedangMenyimpan = true;
 
             simpanButton.setEnabled(false);
@@ -543,16 +417,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(scrollView);
     }
 
-    private EditText buatInput(
-            String hint
-    ) {
+    private EditText buatInput(String hint) {
 
         EditText input =
                 new EditText(this);
 
         input.setHint(hint);
         input.setTextSize(16);
-
         input.setPadding(
                 15,
                 15,
@@ -578,10 +449,6 @@ public class MainActivity extends AppCompatActivity {
         return input;
     }
 
-    // =========================
-    // SIMPAN FIRESTORE
-    // =========================
-
     private void simpanReminder(
             String nama,
             String wa,
@@ -598,43 +465,17 @@ public class MainActivity extends AppCompatActivity {
                 new SimpleDateFormat(
                         "dd/MM/yyyy",
                         Locale.getDefault()
-                ).format(
-                        new Date()
-                );
+                ).format(new Date());
 
         Map<String, Object> data =
                 new HashMap<>();
 
-        data.put(
-                "nama",
-                nama
-        );
-
-        data.put(
-                "wa",
-                wa
-        );
-
-        data.put(
-                "motor",
-                motor
-        );
-
-        data.put(
-                "nopol",
-                nopol
-        );
-
-        data.put(
-                "km",
-                km
-        );
-
-        data.put(
-                "bulan",
-                bulan
-        );
-
+        data.put("nama", nama);
+        data.put("wa", wa);
+        data.put("motor", motor);
+        data.put("nopol", nopol);
+        data.put("km", km);
+        data.put("bulan", bulan);
         data.put(
                 "tanggalGantiOli",
                 tanggalGantiOli
@@ -666,8 +507,6 @@ public class MainActivity extends AppCompatActivity {
                         .serverTimestamp()
         );
 
-        // 1 bulan = 30 hari
-        // 2 bulan = 60 hari
         long waktuReminder =
                 System.currentTimeMillis()
                         + (
@@ -691,7 +530,6 @@ public class MainActivity extends AppCompatActivity {
 
                             sedangMenyimpan = false;
 
-                            // Jadwalkan notifikasi
                             jadwalkanNotifikasi(
                                     documentReference.getId(),
                                     nama,
@@ -734,10 +572,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
     }
-
-    // =========================
-    // JADWAL NOTIFIKASI
-    // =========================
 
     private void jadwalkanNotifikasi(
             String documentId,
@@ -811,10 +645,7 @@ public class MainActivity extends AppCompatActivity {
                         android.os.Build.VERSION_CODES.S
         ) {
 
-            if (
-                    !alarmManager
-                            .canScheduleExactAlarms()
-            ) {
+            if (!alarmManager.canScheduleExactAlarms()) {
 
                 Toast.makeText(
                         this,
@@ -861,10 +692,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // =========================
-    // ANTRIAN
-    // =========================
-
     private void tampilkanAntrian() {
 
         ScrollView scrollView =
@@ -892,7 +719,9 @@ public class MainActivity extends AppCompatActivity {
         );
 
         title.setTextSize(24);
-        title.setGravity(Gravity.CENTER);
+        title.setGravity(
+                Gravity.CENTER
+        );
 
         title.setPadding(
                 0,
@@ -995,10 +824,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
     }
-
-    // =========================
-    // TAMPILKAN REMINDER
-    // =========================
 
     private void tampilkanReminder(
             LinearLayout layout,
@@ -1200,7 +1025,9 @@ public class MainActivity extends AppCompatActivity {
     ) {
 
         String value =
-                document.getString(field);
+                document.getString(
+                        field
+                );
 
         return value == null
                 ? ""
@@ -1213,16 +1040,14 @@ public class MainActivity extends AppCompatActivity {
     ) {
 
         Long value =
-                document.getLong(field);
+                document.getLong(
+                        field
+                );
 
         return value == null
                 ? 0
                 : value;
     }
-
-    // =========================
-    // WHATSAPP
-    // =========================
 
     private void bukaWhatsApp(
             String documentId,
@@ -1240,18 +1065,14 @@ public class MainActivity extends AppCompatActivity {
                         ""
                 );
 
-        if (
-                nomorWA.startsWith("0")
-        ) {
+        if (nomorWA.startsWith("0")) {
 
             nomorWA =
                     "62"
                             + nomorWA.substring(1);
         }
 
-        if (
-                nomorWA.startsWith("+")
-        ) {
+        if (nomorWA.startsWith("+")) {
 
             nomorWA =
                     nomorWA.substring(1);
@@ -1279,8 +1100,7 @@ public class MainActivity extends AppCompatActivity {
 
         pesan.append(
                 barisBulan
-        )
-                .append("\n\n");
+        ).append("\n\n");
 
         pesan.append(
                 "Kami dari RR MOTOR ingin mengingatkan bahwa kendaraan Anda sudah memasuki jadwal pengecekan/penggantian oli. 🔧\n\n"
@@ -1371,13 +1191,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // =========================
-    // FORMAT ANGKA
-    // =========================
-
-    private String formatAngka(
-            long angka
-    ) {
+    private String formatAngka(long angka) {
 
         return String.format(
                 Locale.US,
