@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Internet untuk Firebase dan WhatsApp -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Akses kontak HP -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- Notifikasi Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Alarm tepat waktu -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
