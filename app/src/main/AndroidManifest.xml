@@ -8,6 +8,7 @@
     <application
         android:allowBackup="false"
         android:label="RR MOTOR REMINDER"
+        android:icon="@drawable/icon_rr_motor"
         android:supportsRtl="true"
         android:theme="@style/Theme.RRMotorReminder">
 
