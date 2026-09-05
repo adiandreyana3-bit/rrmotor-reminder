@@ -20,6 +20,12 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
         String nama =
                 getIntent().getStringExtra("nama");
 
+        String motor =
+                getIntent().getStringExtra("motor");
+
+        String nopol =
+                getIntent().getStringExtra("nopol");
+
         long kmMaksimal =
                 getIntent().getLongExtra(
                         "kmMaksimal",
@@ -76,9 +82,18 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
                 "Halo Bapak/Ibu 👋\n\n"
         );
 
+        if (nama != null && !nama.isEmpty()) {
+            pesan.append(
+                    "👤 "
+            )
+                    .append(nama)
+                    .append("\n\n");
+        }
+
         pesan.append(
                 barisBulan
-        ).append("\n\n");
+        )
+                .append("\n\n");
 
         pesan.append(
                 "Kami dari RR MOTOR ingin mengingatkan bahwa kendaraan Anda sudah memasuki jadwal pengecekan/penggantian oli. 🔧\n\n"
@@ -88,13 +103,31 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
                 "✨ Pengecekan kondisi oli GRATIS!\n\n"
         );
 
+        if (motor != null && !motor.isEmpty()) {
+            pesan.append(
+                    "🏍️ Jenis motor: "
+            )
+                    .append(motor)
+                    .append("\n");
+        }
+
+        if (nopol != null && !nopol.isEmpty()) {
+            pesan.append(
+                    "🔖 Nopol: "
+            )
+                    .append(nopol)
+                    .append("\n");
+        }
+
         if (kmMaksimal > 0) {
 
             pesan.append(
-                    "🔧 KM maksimal penggantian oli: "
+                    "\n🔧 KM maksimal penggantian oli: "
             )
                     .append(
-                            formatAngka(kmMaksimal)
+                            formatAngka(
+                                    kmMaksimal
+                            )
                     )
                     .append(" KM\n");
 
@@ -102,13 +135,15 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
                     "⚠️ Paling lambat penggantian oli: "
             )
                     .append(
-                            formatAngka(kmTerakhir)
+                            formatAngka(
+                                    kmTerakhir
+                            )
                     )
-                    .append(" KM\n\n");
+                    .append(" KM\n");
         }
 
         pesan.append(
-                "Silakan datang ke RR MOTOR untuk pengecekan kondisi oli dan kendaraan Anda.\n\n"
+                "\nSilakan datang ke RR MOTOR untuk pengecekan kondisi oli dan kendaraan Anda.\n\n"
         );
 
         pesan.append(
@@ -147,7 +182,9 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
             startActivity(intent);
 
         } catch (Exception e) {
-            // Tidak melakukan apa-apa jika WhatsApp tidak dapat dibuka
+
+            // Jika WhatsApp tidak dapat dibuka,
+            // aplikasi cukup ditutup.
         }
 
         finish();
@@ -159,6 +196,9 @@ public class WhatsAppRedirectActivity extends AppCompatActivity {
                 java.util.Locale.US,
                 "%,d",
                 angka
-        ).replace(",", ".");
+        ).replace(
+                ",",
+                "."
+        );
     }
 }
